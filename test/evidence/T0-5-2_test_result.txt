@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 9 items
+
+test/integration/test_convert_e2e.py::test_convert_returns_200 PASSED    [ 11%]
+test/integration/test_convert_e2e.py::test_convert_output_passes_schema PASSED [ 22%]
+test/integration/test_convert_e2e.py::test_convert_state_has_three_or_more_items PASSED [ 33%]
+test/integration/test_convert_e2e.py::test_convert_output_has_trace_id PASSED [ 44%]
+test/integration/test_convert_e2e.py::test_convert_output_has_rollback_plan PASSED [ 55%]
+test/integration/test_convert_e2e.py::test_convert_output_has_action_bindings PASSED [ 66%]
+test/integration/test_convert_e2e.py::test_convert_action_bindings_all_dry_run PASSED [ 77%]
+test/integration/test_convert_e2e.py::test_convert_empty_input_returns_400 PASSED [ 88%]
+test/integration/test_convert_e2e.py::test_convert_stable_output_10_times PASSED [100%]
+
+============================== 9 passed in 1.46s ==============================
