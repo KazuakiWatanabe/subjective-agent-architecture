@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+testpaths: test
+plugins: anyio-4.12.1
+collecting ... collected 17 items
+
+test/agents/test_reader.py::test_reader_returns_state_list PASSED        [  5%]
+test/agents/test_reader.py::test_reader_returns_at_least_one_state PASSED [ 11%]
+test/agents/test_reader.py::test_reader_raises_on_llm_failure PASSED     [ 17%]
+test/agents/test_reader.py::test_reader_raises_on_empty_input PASSED     [ 23%]
+test/agents/test_reader.py::test_reader_raises_on_none_input PASSED      [ 29%]
+test/contracts/test_state_intent_schema.py::test_schema_file_exists PASSED [ 35%]
+test/contracts/test_state_intent_schema.py::test_schema_is_valid_json_schema PASSED [ 41%]
+test/contracts/test_state_intent_schema.py::test_required_fields_defined PASSED [ 47%]
+test/contracts/test_state_intent_schema.py::test_state_min_items PASSED  [ 52%]
+test/contracts/test_state_intent_schema.py::test_next_actions_min_items PASSED [ 58%]
+test/contracts/test_state_intent_schema.py::test_confidence_range PASSED [ 64%]
+test/contracts/test_state_intent_schema.py::test_action_bindings_min_items PASSED [ 70%]
+test/contracts/test_state_intent_schema.py::test_action_bindings_item_required_fields PASSED [ 76%]
+test/contracts/test_state_intent_schema.py::test_valid_payload_passes PASSED [ 82%]
+test/contracts/test_state_intent_schema.py::test_invalid_payload_missing_intent_fails PASSED [ 88%]
+test/contracts/test_state_intent_schema.py::test_invalid_state_too_few_items_fails PASSED [ 94%]
+test/contracts/test_state_intent_schema.py::test_invalid_action_bindings_missing_dry_run_fails PASSED [100%]
+
+============================= 17 passed in 0.38s ==============================

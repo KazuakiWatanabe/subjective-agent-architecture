@@ -174,6 +174,8 @@ Step 8  サーバー起動 → test/integration/ を実行
 - `ValidationResult(ok=False)` を受け取った `Generator` は `GeneratorError` を raise する
 - `MaxRetryError` 発生時も `audit_store.save(status="failed")` を呼び出す
 - スキーマ変更時は `test/contracts/test_state_intent_schema.py` を再実行して全件PASS を確認する
+- Pythonファイルには日本語docstringを必須とし、必要に応じて `Args / Returns / Raises / Note` を記述する
+- 条件分岐や補完ロジックなど意図が読み取りづらい処理には、1〜2行の補助コメントを追加する
 
 ---
 
