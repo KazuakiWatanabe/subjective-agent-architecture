@@ -1,0 +1,12 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 2 items
+
+test/integration/test_health.py::test_health_endpoint_returns_200 PASSED [ 50%]
+test/integration/test_health.py::test_health_response_has_status_ok PASSED [100%]
+
+============================== 2 passed in 1.46s ==============================
