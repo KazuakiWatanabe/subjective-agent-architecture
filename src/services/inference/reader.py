@@ -1,9 +1,13 @@
 """自然文入力から state 候補を抽出する Reader を提供する。
 
-入出力: text -> list[str]
+入出力: text -> list[str]。
 制約:
     - 空文字/None は受け付けない
+    - スキーマ外の自由形式オブジェクトは返さない
+
+Note:
     - LLM呼び出し失敗は ReaderError に変換する
+    - _call_llm を分離し、テストでモック可能にする
 """
 
 from __future__ import annotations

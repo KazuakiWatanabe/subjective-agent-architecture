@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 5 items
+
+test/agents/test_orchestrator.py::test_success_on_first_attempt PASSED   [ 20%]
+test/agents/test_orchestrator.py::test_retry_once_on_first_validation_failure PASSED [ 40%]
+test/agents/test_orchestrator.py::test_raises_max_retry_error_after_two_failures PASSED [ 60%]
+test/agents/test_orchestrator.py::test_generator_not_called_on_validation_failure PASSED [ 80%]
+test/agents/test_orchestrator.py::test_execution_order_is_reader_validator_generator PASSED [100%]
+
+============================== 5 passed in 0.04s ==============================
