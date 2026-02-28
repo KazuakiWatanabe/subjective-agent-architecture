@@ -93,13 +93,13 @@
   <div class="hero">
     <div class="eyebrow">ROI仮説 — Business Case</div>
     <h1>Subjective Agent Architecture<br>投資対効果の試算</h1>
-    <p>本資料の数値はすべて仮説ベースの試算です。実績値は Phase 2 以降に計測します。</p>
+    <p>本資料の数値はすべて仮説ベースの試算です。実績値は Phase 1 以降に計測します。</p>
     <span class="disclaimer">⚠️ 数値は仮説試算・確定値ではありません</span>
   </div>
 
   <!-- Summary KPI -->
   <div class="sec">
-    <h2>ROIサマリー（Phase 2完了時点の仮説）</h2>
+    <h2>ROIサマリー（Phase 1完了時点の仮説）</h2>
     <div class="kpi-grid">
       <div class="kpi">
         <div class="num">+8<span style="font-size:1rem;">%</span></div>
@@ -169,7 +169,7 @@
         <li>人件費は¥3,000/hで試算（実際の単価に応じて変動）</li>
         <li>再来店率+8%はLINE配信の業界平均的な改善率を参考に設定</li>
         <li>対象顧客数・配信回数は実業務に合わせて調整が必要</li>
-        <li>Phase 2完了後に実績値と比較・更新予定</li>
+        <li>Phase 1完了後に実績値と比較・更新予定</li>
       </ul>
     </div>
   </div>
@@ -179,21 +179,21 @@
     <h2>フェーズ別 投資規模の試算</h2>
     <div class="invest-grid">
       <div class="inv ph1">
-        <h3>Phase 1 ✅ 完了済み</h3>
+        <h3>Phase 0 ✅ 完了済み</h3>
         <div class="inv-row"><span class="k">設計・実装工数</span><span class="v">〜XX人日</span></div>
         <div class="inv-row"><span class="k">インフラ（Docker）</span><span class="v">既存環境活用</span></div>
         <div class="inv-row"><span class="k">LLM API費用</span><span class="v">テスト範囲のみ</span></div>
         <div class="inv-total"><span class="k">成果</span><span class="v">構造・安全・再現性の証明</span></div>
       </div>
       <div class="inv ph2">
-        <h3>Phase 2 🔶 次フェーズ</h3>
+        <h3>Phase 1 🔶 次フェーズ</h3>
         <div class="inv-row"><span class="k">LINE API接続実装</span><span class="v">〜XX人日</span></div>
         <div class="inv-row"><span class="k">BigQuery設計・実装</span><span class="v">〜XX人日</span></div>
         <div class="inv-row"><span class="k">ダッシュボード開発</span><span class="v">〜XX人日</span></div>
         <div class="inv-total"><span class="k">目標成果</span><span class="v">LINE実配信1件の証明</span></div>
       </div>
       <div class="inv ph3">
-        <h3>Phase 3 ⏳ 計画中</h3>
+        <h3>Phase 2 ⏳ 計画中</h3>
         <div class="inv-row"><span class="k">チャーン特化Agent</span><span class="v">〜XX人日</span></div>
         <div class="inv-row"><span class="k">AB提案機能</span><span class="v">〜XX人日</span></div>
         <div class="inv-row"><span class="k">成果トラッキング</span><span class="v">〜XX人日</span></div>
@@ -216,21 +216,21 @@
           <th>リスク</th>
         </tr>
         <tr>
-          <td>Phase 1（完了）</td>
+          <td>Phase 0（完了）</td>
           <td class="blue">設計・実装・テスト工数</td>
           <td>構造・安全・再現性の実証</td>
           <td class="green">基盤構築 ✅</td>
           <td class="gray">なし（dry_run）</td>
         </tr>
         <tr>
-          <td>Phase 2</td>
+          <td>Phase 1</td>
           <td class="blue">実装工数 + LINE/BQ費用</td>
           <td class="green">¥120,000+/月（仮説）</td>
           <td class="green">早期回収可能</td>
           <td class="gray">配信内容の品質管理</td>
         </tr>
         <tr>
-          <td>Phase 3</td>
+          <td>Phase 2</td>
           <td class="blue">追加実装工数</td>
           <td class="green">¥800,000+/月（スケール後）</td>
           <td class="green">高ROI見込み</td>
@@ -242,10 +242,10 @@
 
   <!-- CTA -->
   <div class="cta">
-    <h2>Phase 2の投資判断</h2>
-    <p>Phase 1で構造・安全・再現性はすでに実証済みです。<br>Phase 2は「価値を1件実証する」最小スコープの投資です。</p>
+    <h2>Phase 1の投資判断</h2>
+    <p>Phase 0で構造・安全・再現性はすでに実証済みです。<br>Phase 1は「価値を1件実証する」最小スコープの投資です。</p>
     <div class="roi-highlight">¥120,000 / 月 の価値実証が目標</div>
-    <div class="roi-sub">※ チャーンシナリオA単体の仮説試算。実績値はPhase 2完了後に更新。</div>
+    <div class="roi-sub">※ チャーンシナリオA単体の仮説試算。実績値はPhase 1完了後に更新。</div>
     <p style="margin-top:16px;">必要な承認：① LINE接続許可　② BigQueryプロジェクト払い出し<br>スコープ：チャーン傾向シナリオのLINE配信 1パターンのみ</p>
   </div>
 
