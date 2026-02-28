@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./:/app
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    depends_on:
+      - app
+    environment:
+      - PYTHONPATH=/app/src
+      - DEMO_URL=http://app:8080
+    command: ["python", "-m", "pytest", "-v"]
+    volumes:
+      - ./:/app

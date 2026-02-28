@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subjective Agent Architecture – Tech Detail</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.7; }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 60px 0 40px; border-bottom: 1px solid #30363d; margin-bottom: 48px; }
+  .hero h1 { font-size: 2rem; color: #58a6ff; letter-spacing: 0.04em; }
+  .hero .sub { color: #8b949e; margin-top: 8px; font-size: 0.95rem; }
+  .badge { display: inline-block; margin: 4px; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .b-blue { background: #1f4068; color: #58a6ff; }
+  .b-green { background: #0d3a1f; color: #3fb950; }
+  .b-yellow { background: #3a2d00; color: #d29922; }
+
+  /* Section */
+  .section { margin-bottom: 56px; }
+  .section h2 { font-size: 1.2rem; color: #58a6ff; border-left: 4px solid #58a6ff; padding-left: 12px; margin-bottom: 20px; }
+
+  /* Pipeline */
+  .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 16px 0; }
+  .pipe-step { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 120px; flex: 1; }
+  .pipe-step .name { font-size: 0.85rem; font-weight: 700; color: #58a6ff; }
+  .pipe-step .desc { font-size: 0.72rem; color: #8b949e; margin-top: 4px; }
+  .pipe-arrow { color: #30363d; font-size: 1.4rem; padding: 0 4px; }
+
+  /* Code block */
+  pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; overflow-x: auto; font-size: 0.82rem; line-height: 1.6; }
+  .kw { color: #ff7b72; }
+  .str { color: #a5d6ff; }
+  .key { color: #79c0ff; }
+  .val { color: #a8ff78; }
+  .cmt { color: #8b949e; font-style: italic; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { background: #161b22; color: #8b949e; font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 1px solid #30363d; }
+  td { padding: 10px 14px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  td.ok { color: #3fb950; }
+  td.wip { color: #d29922; }
+  td.next { color: #8b949e; }
+
+  /* Cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px 20px; }
+  .card h3 { font-size: 0.9rem; color: #58a6ff; margin-bottom: 8px; }
+  .card p, .card li { font-size: 0.83rem; color: #8b949e; }
+  .card ul { padding-left: 16px; }
+  .card li { margin-bottom: 4px; }
+
+  /* Flow diagram */
+  .flow { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 24px; font-size: 0.83rem; }
+  .flow-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .flow-tag { min-width: 120px; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-align: center; }
+  .t-reader { background: #1f4068; color: #58a6ff; }
+  .t-validator { background: #0d3a1f; color: #3fb950; }
+  .t-generator { background: #3a1a5c; color: #bc8cff; }
+  .t-action { background: #3a2d00; color: #d29922; }
+  .flow-detail { color: #c9d1d9; }
+  .flow-detail small { color: #8b949e; display: block; }
+
+  /* Roadmap */
+  .roadmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .rm-phase { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px; }
+  .rm-phase h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+  .rm-phase ul { list-style: none; padding: 0; }
+  .rm-phase li { font-size: 0.8rem; color: #8b949e; padding: 3px 0; }
+  .rm-phase li::before { content: '→ '; color: #58a6ff; }
+  .ph1 h3 { color: #3fb950; }
+  .ph2 h3 { color: #58a6ff; }
+  .ph3 h3 { color: #bc8cff; }
+
+  footer { text-align: center; padding: 32px 0; color: #30363d; font-size: 0.78rem; border-top: 1px solid #21262d; margin-top: 48px; }
+
+  @media (max-width: 600px) {
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); }
+    .roadmap { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Subjective Agent Architecture</h1>
+    <div class="sub">技術者向け詳細ドキュメント — Internal Review</div>
+    <div style="margin-top:14px;">
+      <span class="badge b-green">Docker ✓</span>
+      <span class="badge b-green">pytest 37件 PASS ✓</span>
+      <span class="badge b-blue">dry_run mode</span>
+      <span class="badge b-yellow">Phase 1 完了</span>
+    </div>
+  </div>
+
+  <!-- 1. 設計思想 -->
+  <div class="section">
+    <h2>1. 設計思想 — なぜ「state分割」か</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>❌ 自然文のまま渡すと</h3>
+        <ul>
+          <li>施策に接続できない</li>
+          <li>APIに渡せない</li>
+          <li>スキーマ検証不能</li>
+          <li>監査ログが残らない</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>✅ state化することで</h3>
+        <ul>
+          <li>JSON構造として固定化</li>
+          <li>スキーマ検証可能</li>
+          <li>DB保存・監査可能</li>
+          <li>API引数として利用可能</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔒 安全設計の前提</h3>
+        <ul>
+          <li>全actionはdry_runデフォルト</li>
+          <li>rollback_planが常に存在</li>
+          <li>trace_idで説明責任を担保</li>
+          <li>retry / fallbackロジック内蔵</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. パイプライン -->
+  <div class="section">
+    <h2>2. 処理パイプライン構成</h2>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="name">自然文入力</div>
+        <div class="desc">ユーザー発話 / CS記録</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="name">Reader</div>
+        <div class="desc">state抽出</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="name">Validator</div>
+        <div class="desc">必須項目 / 整合チェック</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="name">Generator</div>
+        <div class="desc">JSON固定構造出力</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="name">Action Binder</div>
+        <div class="desc">業務API接続 (dry_run)</div>
+      </div>
+    </div>
+
+    <div class="flow" style="margin-top:20px;">
+      <div class="flow-row">
+        <span class="flow-tag t-reader">Reader</span>
+        <div class="flow-detail">
+          自然文からstate配列を抽出。LLMプロンプトで構造化。
+          <small>出力例: ["来店頻度低下", "価格感度低", "限定感志向"]</small>
+        </div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-tag t-validator">Validator</span>
+        <div class="flow-detail">
+          state / intent / next_actionsの存在確認・型チェック。失敗時はretry → fallback。
+          <small>JSONスキーマ検証 + カスタムバリデーションルール適用</small>
+        </div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-tag t-generator">Generator</span>
+        <div class="flow-detail">
+          固定スキーマでJSON出力。rollback_plan / trace_id を自動付与。
+          <small>出力は毎回スキーマ検証し、10回安定出力を確認済み</small>
+        </div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-tag t-action">Action Binder</span>
+        <div class="flow-detail">
+          action_bindingsに従いAPIを呼び出し。現在はすべてdry_run=true。
+          <small>{"api": "line.broadcast", "dry_run": true}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 出力スキーマ -->
+  <div class="section">
+    <h2>3. 出力スキーマ（固定構造）</h2>
+    <pre><span class="cmt">// シナリオA: チャーン傾向の入力</span>
+<span class="cmt">// 入力: 「最近来店が減っている。値引きには反応しないが、限定感には反応する。」</span>
+
+{
+  <span class="key">"trace_id"</span>: <span class="str">"agt-20240601-0042"</span>,
+  <span class="key">"state"</span>: [
+    <span class="str">"来店頻度低下"</span>,
+    <span class="str">"価格感度低"</span>,
+    <span class="str">"限定感志向"</span>
+  ],
+  <span class="key">"intent"</span>: <span class="str">"再来店動機付け"</span>,
+  <span class="key">"next_actions"</span>: [
+    <span class="str">"限定LINE配信案"</span>,
+    <span class="str">"会員限定イベント"</span>
+  ],
+  <span class="key">"rollback_plan"</span>: <span class="str">"配信停止 → 通常施策に戻す"</span>,
+  <span class="key">"action_bindings"</span>: [
+    {
+      <span class="key">"api"</span>: <span class="str">"line.broadcast"</span>,
+      <span class="key">"dry_run"</span>: <span class="kw">true</span>   <span class="cmt">// 現フェーズは全てdry_run</span>
+    }
+  ]
+}</pre>
+  </div>
+
+  <!-- 4. テスト設計 -->
+  <div class="section">
+    <h2>4. テスト設計 — pytest 37件構成</h2>
+    <table>
+      <tr>
+        <th>テストカテゴリ</th>
+        <th>内容</th>
+        <th>件数</th>
+        <th>状態</th>
+      </tr>
+      <tr>
+        <td>スキーマ検証</td>
+        <td>必須フィールド・型・構造の正当性</td>
+        <td>8</td>
+        <td class="ok">✅ PASS</td>
+      </tr>
+      <tr>
+        <td>Retryロジック</td>
+        <td>Validator失敗時のリトライ / fallback動作</td>
+        <td>6</td>
+        <td class="ok">✅ PASS</td>
+      </tr>
+      <tr>
+        <td>dry_run検証</td>
+        <td>action_bindingsがdry_run=trueを維持しているか</td>
+        <td>5</td>
+        <td class="ok">✅ PASS</td>
+      </tr>
+      <tr>
+        <td>安定出力検証</td>
+        <td>同一入力で10回連続出力が構造的に一致するか</td>
+        <td>10</td>
+        <td class="ok">✅ PASS</td>
+      </tr>
+      <tr>
+        <td>E2Eシナリオ</td>
+        <td>シナリオA/B/C の入力→出力の完全フロー</td>
+        <td>8</td>
+        <td class="ok">✅ PASS</td>
+      </tr>
+    </table>
+
+    <pre style="margin-top:16px;"><span class="cmt"># 実行コマンド (PowerShell)</span>
+<span class="val">cd</span> C:\Git\subjective-agent-architecture\script
+<span class="val">Set-ExecutionPolicy</span> -Scope Process -ExecutionPolicy Bypass
+.\demo.local.with-tests.ps1
+
+<span class="cmt"># ログ保存先</span>
+test/evidence/pytest.local.<span class="str">YYYYMMDD-HHMMSS</span>.log</pre>
+  </div>
+
+  <!-- 5. 業務シナリオ -->
+  <div class="section">
+    <h2>5. 業務接続シナリオ対応表</h2>
+    <table>
+      <tr>
+        <th>シナリオ</th>
+        <th>入力概要</th>
+        <th>抽出state</th>
+        <th>intent</th>
+        <th>接続先API</th>
+      </tr>
+      <tr>
+        <td><strong>A: チャーン傾向</strong></td>
+        <td>来店減・値引き不反応・限定感反応</td>
+        <td>来店頻度低下 / 価格感度低 / 限定感志向</td>
+        <td>再来店動機付け</td>
+        <td>line.broadcast (dry_run)</td>
+      </tr>
+      <tr>
+        <td><strong>B: 費用対効果</strong></td>
+        <td>成果が見えないと店舗から指摘</td>
+        <td>成果不透明 / 説明不足</td>
+        <td>成果可視化</td>
+        <td>dashboard.generate (dry_run)</td>
+      </tr>
+      <tr>
+        <td><strong>C: 現場負荷</strong></td>
+        <td>配信作業が面倒で継続不可</td>
+        <td>運用負荷高</td>
+        <td>作業簡略化</td>
+        <td>template.generate (dry_run)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 6. 到達点と課題 -->
+  <div class="section">
+    <h2>6. 現フェーズの到達点と未解決事項</h2>
+    <table>
+      <tr><th>項目</th><th>状態</th><th>補足</th></tr>
+      <tr><td>再現性（Docker + pytest）</td><td class="ok">✅ 完了</td><td>37件全PASS・証跡ログあり</td></tr>
+      <tr><td>スキーマ固定化</td><td class="ok">✅ 完了</td><td>10回連続安定出力確認</td></tr>
+      <tr><td>dry_run安全設計</td><td class="ok">✅ 完了</td><td>全actionでdry_run=true強制</td></tr>
+      <tr><td>rollback_plan付与</td><td class="ok">✅ 完了</td><td>出力スキーマに必須フィールドとして定義</td></tr>
+      <tr><td>trace_id管理</td><td class="ok">✅ 完了</td><td>全出力に自動付与</td></tr>
+      <tr><td>本番API実接続</td><td class="wip">🔶 未着手</td><td>LINE 1パターンのみ次フェーズで実施</td></tr>
+      <tr><td>BigQuery保存</td><td class="next">⏳ Phase 2</td><td>成果ログ可視化と同時実装予定</td></tr>
+      <tr><td>AB提案自動化</td><td class="next">⏳ Phase 3</td><td>チャーン特化Agentとして設計予定</td></tr>
+    </table>
+  </div>
+
+  <!-- 7. ロードマップ -->
+  <div class="section">
+    <h2>7. 実装ロードマップ</h2>
+    <div class="roadmap">
+      <div class="rm-phase ph1">
+        <h3>Phase 1 ✅ 完了</h3>
+        <ul>
+          <li>パイプライン構造設計</li>
+          <li>Docker環境整備</li>
+          <li>pytest 37件整備</li>
+          <li>dry_run安全設計</li>
+          <li>スキーマ固定・安定出力確認</li>
+        </ul>
+      </div>
+      <div class="rm-phase ph2">
+        <h3>Phase 2 🔶 次フェーズ</h3>
+        <ul>
+          <li>LINE broadcast 実接続（1パターン）</li>
+          <li>BigQuery保存設計</li>
+          <li>成果ログ可視化</li>
+          <li>dry_run → 本番切替フラグ設計</li>
+        </ul>
+      </div>
+      <div class="rm-phase ph3">
+        <h3>Phase 3 ⏳ 計画中</h3>
+        <ul>
+          <li>チャーン対策特化Agent</li>
+          <li>来店頻度低下に特化した自動分岐</li>
+          <li>成果トラッキング統合</li>
+          <li>AB提案の自動生成</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>Subjective Agent Architecture — Internal Technical Document — Confidential</footer>
+</div>
+</body>
+</html>

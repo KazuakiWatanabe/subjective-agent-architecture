@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI仮説 – Subjective Agent Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; background: #0d1117; color: #e6edf3; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .hero { text-align: center; padding: 48px 0 40px; border-bottom: 1px solid #21262d; margin-bottom: 48px; }
+  .hero .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #3fb950; margin-bottom: 10px; }
+  .hero h1 { font-size: 1.9rem; font-weight: 800; }
+  .hero p { color: #8b949e; margin-top: 10px; font-size: 0.9rem; }
+  .disclaimer { display: inline-block; margin-top: 14px; background: #3a2d00; color: #d29922; font-size: 0.72rem; padding: 4px 12px; border-radius: 12px; }
+
+  /* Section */
+  .sec { margin-bottom: 52px; }
+  .sec h2 { font-size: 1.1rem; font-weight: 700; color: #3fb950; border-left: 4px solid #3fb950; padding-left: 12px; margin-bottom: 20px; }
+
+  /* KPI cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+  .kpi { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px 16px; text-align: center; }
+  .kpi .num { font-size: 1.8rem; font-weight: 800; color: #3fb950; }
+  .kpi .unit { font-size: 0.7rem; color: #8b949e; }
+  .kpi .label { font-size: 0.75rem; color: #8b949e; margin-top: 6px; line-height: 1.4; }
+  .kpi .basis { font-size: 0.68rem; color: #484f58; margin-top: 6px; }
+
+  /* Scenario ROI */
+  .scenario-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .sc-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; }
+  .sc-head { padding: 14px 16px; border-bottom: 1px solid #21262d; }
+  .sc-head .tag { font-size: 0.7rem; font-weight: 700; color: #8b949e; margin-bottom: 4px; }
+  .sc-head h3 { font-size: 0.9rem; color: #e6edf3; }
+  .sc-body { padding: 14px 16px; }
+  .sc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid #21262d; }
+  .sc-row:last-child { border-bottom: none; }
+  .sc-row .k { font-size: 0.76rem; color: #8b949e; }
+  .sc-row .v { font-size: 0.84rem; font-weight: 700; color: #3fb950; }
+  .sc-row .v.neutral { color: #58a6ff; }
+  .sc-row .v.cost { color: #ff7b72; }
+
+  /* ROI table */
+  .roi-table { background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  th { background: #0d1117; color: #8b949e; font-size: 0.76rem; padding: 10px 16px; text-align: left; border-bottom: 1px solid #30363d; }
+  td { padding: 10px 16px; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+  td.green { color: #3fb950; font-weight: 700; }
+  td.blue { color: #58a6ff; }
+  td.red { color: #ff7b72; }
+  td.gray { color: #8b949e; }
+
+  /* Phase investment */
+  .invest-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .inv { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 18px; }
+  .inv h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; }
+  .ph1 h3 { color: #3fb950; } .ph2 h3 { color: #58a6ff; } .ph3 h3 { color: #bc8cff; }
+  .inv-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 4px 0; border-bottom: 1px solid #21262d; }
+  .inv-row:last-child { border-bottom: none; }
+  .inv-row .k { color: #8b949e; }
+  .inv-row .v { color: #e6edf3; font-weight: 600; }
+  .inv-total { margin-top: 10px; display: flex; justify-content: space-between; font-size: 0.82rem; padding-top: 8px; border-top: 1px solid #30363d; }
+  .inv-total .k { color: #8b949e; }
+  .inv-total .v { font-weight: 800; color: #3fb950; }
+
+  /* Assumption box */
+  .assumption { background: #0d2240; border: 1px solid #1f4068; border-radius: 10px; padding: 16px 20px; margin-top: 20px; }
+  .assumption h3 { font-size: 0.8rem; color: #58a6ff; margin-bottom: 10px; }
+  .assumption li { font-size: 0.78rem; color: #8b949e; list-style: none; padding: 3px 0; }
+  .assumption li::before { content: '※ '; color: #58a6ff; }
+
+  /* CTA */
+  .cta { background: linear-gradient(135deg, #0d2240, #1a1f35); border: 1px solid #1f4068; border-radius: 14px; padding: 32px 36px; text-align: center; margin-top: 32px; }
+  .cta h2 { font-size: 1.3rem; color: #58a6ff; margin-bottom: 12px; }
+  .cta p { color: #8b949e; font-size: 0.88rem; line-height: 1.7; max-width: 560px; margin: 0 auto; }
+  .cta .roi-highlight { font-size: 1.6rem; font-weight: 800; color: #3fb950; margin: 16px 0 8px; }
+  .cta .roi-sub { font-size: 0.78rem; color: #8b949e; }
+
+  footer { text-align: center; color: #30363d; font-size: 0.74rem; padding: 24px 0 8px; }
+
+  @media(max-width:640px){
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .scenario-grid, .invest-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="hero">
+    <div class="eyebrow">ROI仮説 — Business Case</div>
+    <h1>Subjective Agent Architecture<br>投資対効果の試算</h1>
+    <p>本資料の数値はすべて仮説ベースの試算です。実績値は Phase 2 以降に計測します。</p>
+    <span class="disclaimer">⚠️ 数値は仮説試算・確定値ではありません</span>
+  </div>
+
+  <!-- Summary KPI -->
+  <div class="sec">
+    <h2>ROIサマリー（Phase 2完了時点の仮説）</h2>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="num">+8<span style="font-size:1rem;">%</span></div>
+        <div class="label">チャーン顧客の再来店率改善（仮説）</div>
+        <div class="basis">限定オファー配信による動機付け効果を想定</div>
+      </div>
+      <div class="kpi">
+        <div class="num">▲60<span style="font-size:1rem;">%</span></div>
+        <div class="label">CS担当者の施策立案工数削減（仮説）</div>
+        <div class="basis">自然文→施策変換の自動化による試算</div>
+      </div>
+      <div class="kpi">
+        <div class="num">▲40<span style="font-size:1rem;">%</span></div>
+        <div class="label">店舗向け配信作業時間（仮説）</div>
+        <div class="basis">テンプレ自動生成・下書き自動化を想定</div>
+      </div>
+      <div class="kpi">
+        <div class="num">0</div>
+        <div class="label">誤配信・誤実行リスク</div>
+        <div class="basis">dry_run設計で構造的にゼロを担保（実績）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario ROI -->
+  <div class="sec">
+    <h2>シナリオ別 ROI仮説</h2>
+    <div class="scenario-grid">
+      <div class="sc-card">
+        <div class="sc-head"><div class="tag">シナリオ A</div><h3>チャーン傾向顧客の再来店</h3></div>
+        <div class="sc-body">
+          <div class="sc-row"><span class="k">対象顧客数（仮説）</span><span class="v neutral">500名/月</span></div>
+          <div class="sc-row"><span class="k">配信コスト</span><span class="v cost">LINE費用のみ</span></div>
+          <div class="sc-row"><span class="k">再来店率改善（仮説）</span><span class="v">+8%</span></div>
+          <div class="sc-row"><span class="k">追加来店数（仮説）</span><span class="v">+40名/月</span></div>
+          <div class="sc-row"><span class="k">客単価想定</span><span class="v neutral">¥3,000</span></div>
+          <div class="sc-row"><span class="k">追加売上試算</span><span class="v">¥120,000/月</span></div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head"><div class="tag">シナリオ B</div><h3>費用対効果の可視化</h3></div>
+        <div class="sc-body">
+          <div class="sc-row"><span class="k">現状の課題</span><span class="v neutral">成果説明に1h/件</span></div>
+          <div class="sc-row"><span class="k">月次対応件数</span><span class="v neutral">20件/月</span></div>
+          <div class="sc-row"><span class="k">自動化後の工数</span><span class="v">▲80%削減</span></div>
+          <div class="sc-row"><span class="k">削減工数（仮説）</span><span class="v">▲16h/月</span></div>
+          <div class="sc-row"><span class="k">人件費換算（想定）</span><span class="v">▲¥48,000/月</span></div>
+          <div class="sc-row"><span class="k">年間換算</span><span class="v">▲¥576,000</span></div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head"><div class="tag">シナリオ C</div><h3>配信オペレーションの効率化</h3></div>
+        <div class="sc-body">
+          <div class="sc-row"><span class="k">現状の配信作業時間</span><span class="v neutral">2h/回</span></div>
+          <div class="sc-row"><span class="k">月次配信回数</span><span class="v neutral">8回/月</span></div>
+          <div class="sc-row"><span class="k">自動化後の工数</span><span class="v">▲40%削減</span></div>
+          <div class="sc-row"><span class="k">削減工数（仮説）</span><span class="v">▲6.4h/月</span></div>
+          <div class="sc-row"><span class="k">人件費換算（想定）</span><span class="v">▲¥19,200/月</span></div>
+          <div class="sc-row"><span class="k">年間換算</span><span class="v">▲¥230,400</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="assumption">
+      <h3>試算の前提条件</h3>
+      <ul>
+        <li>人件費は¥3,000/hで試算（実際の単価に応じて変動）</li>
+        <li>再来店率+8%はLINE配信の業界平均的な改善率を参考に設定</li>
+        <li>対象顧客数・配信回数は実業務に合わせて調整が必要</li>
+        <li>Phase 2完了後に実績値と比較・更新予定</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase investment -->
+  <div class="sec">
+    <h2>フェーズ別 投資規模の試算</h2>
+    <div class="invest-grid">
+      <div class="inv ph1">
+        <h3>Phase 1 ✅ 完了済み</h3>
+        <div class="inv-row"><span class="k">設計・実装工数</span><span class="v">〜XX人日</span></div>
+        <div class="inv-row"><span class="k">インフラ（Docker）</span><span class="v">既存環境活用</span></div>
+        <div class="inv-row"><span class="k">LLM API費用</span><span class="v">テスト範囲のみ</span></div>
+        <div class="inv-total"><span class="k">成果</span><span class="v">構造・安全・再現性の証明</span></div>
+      </div>
+      <div class="inv ph2">
+        <h3>Phase 2 🔶 次フェーズ</h3>
+        <div class="inv-row"><span class="k">LINE API接続実装</span><span class="v">〜XX人日</span></div>
+        <div class="inv-row"><span class="k">BigQuery設計・実装</span><span class="v">〜XX人日</span></div>
+        <div class="inv-row"><span class="k">ダッシュボード開発</span><span class="v">〜XX人日</span></div>
+        <div class="inv-total"><span class="k">目標成果</span><span class="v">LINE実配信1件の証明</span></div>
+      </div>
+      <div class="inv ph3">
+        <h3>Phase 3 ⏳ 計画中</h3>
+        <div class="inv-row"><span class="k">チャーン特化Agent</span><span class="v">〜XX人日</span></div>
+        <div class="inv-row"><span class="k">AB提案機能</span><span class="v">〜XX人日</span></div>
+        <div class="inv-row"><span class="k">成果トラッキング</span><span class="v">〜XX人日</span></div>
+        <div class="inv-total"><span class="k">目標成果</span><span class="v">ROI実測値の取得</span></div>
+      </div>
+    </div>
+    <p style="font-size:0.76rem;color:#484f58;margin-top:12px;">※ 工数（〜XX人日）は社内見積もり後に更新してください。インフラ費用は別途精査。</p>
+  </div>
+
+  <!-- ROI summary table -->
+  <div class="sec">
+    <h2>Phase別 費用対効果サマリー</h2>
+    <div class="roi-table">
+      <table>
+        <tr>
+          <th>フェーズ</th>
+          <th>主な投資</th>
+          <th>期待リターン（仮説）</th>
+          <th>ROI判定</th>
+          <th>リスク</th>
+        </tr>
+        <tr>
+          <td>Phase 1（完了）</td>
+          <td class="blue">設計・実装・テスト工数</td>
+          <td>構造・安全・再現性の実証</td>
+          <td class="green">基盤構築 ✅</td>
+          <td class="gray">なし（dry_run）</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td class="blue">実装工数 + LINE/BQ費用</td>
+          <td class="green">¥120,000+/月（仮説）</td>
+          <td class="green">早期回収可能</td>
+          <td class="gray">配信内容の品質管理</td>
+        </tr>
+        <tr>
+          <td>Phase 3</td>
+          <td class="blue">追加実装工数</td>
+          <td class="green">¥800,000+/月（スケール後）</td>
+          <td class="green">高ROI見込み</td>
+          <td class="gray">AB設計の精度</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Phase 2の投資判断</h2>
+    <p>Phase 1で構造・安全・再現性はすでに実証済みです。<br>Phase 2は「価値を1件実証する」最小スコープの投資です。</p>
+    <div class="roi-highlight">¥120,000 / 月 の価値実証が目標</div>
+    <div class="roi-sub">※ チャーンシナリオA単体の仮説試算。実績値はPhase 2完了後に更新。</div>
+    <p style="margin-top:16px;">必要な承認：① LINE接続許可　② BigQueryプロジェクト払い出し<br>スコープ：チャーン傾向シナリオのLINE配信 1パターンのみ</p>
+  </div>
+
+  <footer style="margin-top:32px;">Subjective Agent Architecture — ROI仮説資料 — 数値は試算値です。確定値ではありません。</footer>
+</div>
+</body>
+</html>

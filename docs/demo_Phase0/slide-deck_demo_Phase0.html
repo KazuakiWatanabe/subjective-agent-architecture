@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subjective Agent Architecture – Slides</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; background: #111; color: #fff; }
+
+  .deck { width: 100%; }
+  .slide { display: none; width: 100%; min-height: 520px; padding: 48px 56px; position: relative; flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+
+  /* Slide types */
+  .slide-cover { background: linear-gradient(135deg, #0d1117 0%, #1a1f35 60%, #0d2240 100%); }
+  .slide-section { background: linear-gradient(135deg, #0d1117, #1a1a2e); border-left: 6px solid #58a6ff; }
+  .slide-content { background: #0d1117; }
+  .slide-dark { background: #080d14; }
+
+  /* Typography */
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #58a6ff; margin-bottom: 12px; }
+  h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+  h2 { font-size: 1.5rem; font-weight: 700; color: #58a6ff; margin-bottom: 20px; }
+  h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .subtitle { font-size: 1rem; color: #8b949e; margin-top: 12px; }
+  p { color: #c9d1d9; font-size: 0.9rem; line-height: 1.7; }
+
+  /* Slide number */
+  .slide-num { position: absolute; bottom: 20px; right: 28px; font-size: 0.72rem; color: #30363d; }
+
+  /* Cards */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 8px; }
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px 18px; }
+  .card h3 { color: #58a6ff; font-size: 0.85rem; margin-bottom: 6px; }
+  .card p { font-size: 0.8rem; }
+  .card ul { padding-left: 14px; }
+  .card li { font-size: 0.8rem; color: #8b949e; margin-bottom: 3px; }
+
+  /* Pipeline */
+  .pipe { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 16px 0; }
+  .pbox { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px; text-align: center; flex: 1; min-width: 90px; }
+  .pbox .n { font-size: 0.78rem; font-weight: 700; color: #58a6ff; }
+  .pbox .d { font-size: 0.68rem; color: #8b949e; margin-top: 3px; }
+  .parr { color: #30363d; font-size: 1.2rem; }
+
+  /* Code */
+  pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; font-size: 0.76rem; line-height: 1.6; overflow-x: auto; }
+  .kw { color: #ff7b72; } .str { color: #a5d6ff; } .key { color: #79c0ff; } .cmt { color: #8b949e; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 8px; }
+  th { background: #161b22; color: #8b949e; padding: 8px 12px; text-align: left; border-bottom: 1px solid #30363d; }
+  td { padding: 8px 12px; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+  .ok { color: #3fb950; } .wip { color: #d29922; } .soon { color: #8b949e; }
+
+  /* Big stat */
+  .stats { display: flex; gap: 20px; margin-top: 16px; }
+  .stat { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; text-align: center; }
+  .stat .num { font-size: 2rem; font-weight: 800; color: #58a6ff; }
+  .stat .lab { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
+
+  /* Roadmap */
+  .rm { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 8px; }
+  .rm-box { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px; }
+  .rm-box h3 { font-size: 0.82rem; margin-bottom: 8px; }
+  .rm-box li { font-size: 0.76rem; color: #8b949e; list-style: none; padding: 2px 0; }
+  .rm-box li::before { content: '→ '; color: #58a6ff; }
+  .ph1 h3 { color: #3fb950; } .ph2 h3 { color: #58a6ff; } .ph3 h3 { color: #bc8cff; }
+
+  /* Quote */
+  .quote { border-left: 4px solid #58a6ff; padding-left: 20px; margin: 16px 0; }
+  .quote p { font-size: 1.05rem; color: #e6edf3; font-style: italic; }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; margin: 3px; }
+  .bg { background: #0d3a1f; color: #3fb950; }
+  .bb { background: #1f4068; color: #58a6ff; }
+  .by { background: #3a2d00; color: #d29922; }
+
+  /* Nav */
+  .nav { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 14px; background: #080d14; border-top: 1px solid #21262d; }
+  .nav button { background: #161b22; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 20px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  .nav button:hover { background: #21262d; }
+  .nav .counter { font-size: 0.82rem; color: #8b949e; min-width: 60px; text-align: center; }
+  .progress { height: 3px; background: #21262d; }
+  .progress-bar { height: 100%; background: #58a6ff; transition: width 0.3s; }
+
+  /* Highlight box */
+  .hbox { background: #0d2240; border: 1px solid #1f4068; border-radius: 10px; padding: 16px 20px; margin-top: 12px; }
+  .hbox p { color: #a5d6ff; font-size: 0.88rem; }
+
+  /* 2col */
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="progress"><div class="progress-bar" id="bar" style="width:6.67%"></div></div>
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide-cover active" data-n="1">
+    <div class="eyebrow">社内デモ資料 — Confidential</div>
+    <h1>Subjective Agent<br>Architecture</h1>
+    <div class="subtitle">業務に接続できる構造を持ったAIエージェント設計の証明</div>
+    <div style="margin-top:28px;">
+      <span class="badge bg">pytest 37件 PASS</span>
+      <span class="badge bb">Docker再現可能</span>
+      <span class="badge by">Phase 1 完了</span>
+    </div>
+    <div class="slide-num">1 / 15</div>
+  </div>
+
+  <!-- Slide 2: Agenda -->
+  <div class="slide slide-content" data-n="2">
+    <div class="eyebrow">Agenda</div>
+    <h2>本日お伝えすること</h2>
+    <div class="cards">
+      <div class="card"><h3>01 課題設定</h3><p>なぜ「構造化」が必要か</p></div>
+      <div class="card"><h3>02 アーキテクチャ</h3><p>パイプラインの全体設計</p></div>
+      <div class="card"><h3>03 技術証明</h3><p>pytest・スキーマ・dry_run</p></div>
+    </div>
+    <div class="cards" style="margin-top:14px;">
+      <div class="card"><h3>04 業務シナリオ</h3><p>3つの実業務への接続例</p></div>
+      <div class="card"><h3>05 到達点</h3><p>現フェーズの完了状態</p></div>
+      <div class="card"><h3>06 ロードマップ</h3><p>Phase 2・3への展開</p></div>
+    </div>
+    <div class="slide-num">2 / 15</div>
+  </div>
+
+  <!-- Slide 3: Problem -->
+  <div class="slide slide-content" data-n="3">
+    <div class="eyebrow">課題設定</div>
+    <h2>AIを業務に使えない本当の理由</h2>
+    <div class="cards">
+      <div class="card"><h3>❌ APIに渡せない</h3><p>自然文のままでは構造化されておらず、業務APIの引数として利用できない</p></div>
+      <div class="card"><h3>❌ 監査できない</h3><p>ログが残らない・誰が何を指示したか追跡不能・説明責任を果たせない</p></div>
+      <div class="card"><h3>❌ 誤実行リスク</h3><p>dry_runや rollback設計がなければ、本番操作で取り返しのつかないミスが起きる</p></div>
+    </div>
+    <div class="hbox" style="margin-top:20px;"><p>難しさはAI精度ではない。<strong>業務接続コスト・誤実行リスク・説明責任・データ分断</strong>が本質的な障壁。</p></div>
+    <div class="slide-num">3 / 15</div>
+  </div>
+
+  <!-- Slide 4: Solution concept -->
+  <div class="slide slide-content" data-n="4">
+    <div class="eyebrow">ソリューション概念</div>
+    <h2>自然文 → state分割 → 業務接続</h2>
+    <div class="quote"><p>「AIで何か作りました」ではない。<br>業務構造を分解し、再接続できる状態にした。」</p></div>
+    <div class="cards cards-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Before（自然文のまま）</h3>
+        <ul>
+          <li>施策に接続不可</li>
+          <li>スキーマ検証不能</li>
+          <li>DB保存できない</li>
+          <li>監査ログなし</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>After（state化）</h3>
+        <ul>
+          <li>JSON固定構造として出力</li>
+          <li>スキーマ検証可能</li>
+          <li>DB保存・監査可能</li>
+          <li>API引数として利用可能</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-num">4 / 15</div>
+  </div>
+
+  <!-- Slide 5: Pipeline overview -->
+  <div class="slide slide-content" data-n="5">
+    <div class="eyebrow">アーキテクチャ</div>
+    <h2>処理パイプライン全体像</h2>
+    <div class="pipe">
+      <div class="pbox"><div class="n">自然文入力</div><div class="d">ユーザー発話</div></div>
+      <div class="parr">→</div>
+      <div class="pbox"><div class="n">Reader</div><div class="d">state抽出</div></div>
+      <div class="parr">→</div>
+      <div class="pbox"><div class="n">Validator</div><div class="d">整合チェック</div></div>
+      <div class="parr">→</div>
+      <div class="pbox"><div class="n">Generator</div><div class="d">JSON固定出力</div></div>
+      <div class="parr">→</div>
+      <div class="pbox"><div class="n">Action Binder</div><div class="d">API接続</div></div>
+    </div>
+    <div class="cards" style="margin-top:12px;">
+      <div class="card"><h3>Reader</h3><p>LLMで自然文からstate配列を抽出。構造化の起点。</p></div>
+      <div class="card"><h3>Validator</h3><p>必須フィールド・型・整合性チェック。失敗時はretry→fallback。</p></div>
+      <div class="card"><h3>Action Binder</h3><p>action_bindingsに従いAPI呼び出し。現在はdry_run=true強制。</p></div>
+    </div>
+    <div class="slide-num">5 / 15</div>
+  </div>
+
+  <!-- Slide 6: Schema -->
+  <div class="slide slide-dark" data-n="6">
+    <div class="eyebrow">出力スキーマ</div>
+    <h2>固定構造JSON出力</h2>
+    <pre><span class="cmt">// 入力: 「最近来店が減っている。限定感には反応する。」</span>
+{
+  <span class="key">"trace_id"</span>: <span class="str">"agt-20240601-0042"</span>,
+  <span class="key">"state"</span>: [<span class="str">"来店頻度低下"</span>, <span class="str">"価格感度低"</span>, <span class="str">"限定感志向"</span>],
+  <span class="key">"intent"</span>: <span class="str">"再来店動機付け"</span>,
+  <span class="key">"next_actions"</span>: [<span class="str">"限定LINE配信案"</span>, <span class="str">"会員限定イベント"</span>],
+  <span class="key">"rollback_plan"</span>: <span class="str">"配信停止 → 通常施策に戻す"</span>,
+  <span class="key">"action_bindings"</span>: [{ <span class="key">"api"</span>: <span class="str">"line.broadcast"</span>, <span class="key">"dry_run"</span>: <span class="kw">true</span> }]
+}</pre>
+    <div class="hbox"><p>rollback_plan / trace_id はすべての出力に自動付与。スキーマ検証は毎回実行。</p></div>
+    <div class="slide-num">6 / 15</div>
+  </div>
+
+  <!-- Slide 7: Safety design -->
+  <div class="slide slide-content" data-n="7">
+    <div class="eyebrow">安全設計</div>
+    <h2>3層の安全設計</h2>
+    <div class="cards">
+      <div class="card"><h3>🔒 dry_run強制</h3><p>全action_bindingsはdry_run=trueがデフォルト。本番実行には明示的フラグ変更が必要。</p></div>
+      <div class="card"><h3>↩️ rollback_plan</h3><p>出力スキーマの必須フィールド。施策実行前に「戻し手順」が必ず存在する。</p></div>
+      <div class="card"><h3>🔍 trace_id</h3><p>全出力に一意IDを付与。誰が・いつ・何を実行したかを完全にトレース可能。</p></div>
+    </div>
+    <div class="hbox" style="margin-top:16px;"><p>誤配信・誤実行を構造的に防ぐ設計。Validatorの失敗時はretry→fallbackで安全に停止。</p></div>
+    <div class="slide-num">7 / 15</div>
+  </div>
+
+  <!-- Slide 8: Test -->
+  <div class="slide slide-content" data-n="8">
+    <div class="eyebrow">技術的証明</div>
+    <h2>pytest 37件 — 全PASS</h2>
+    <table>
+      <tr><th>カテゴリ</th><th>内容</th><th>件数</th><th>状態</th></tr>
+      <tr><td>スキーマ検証</td><td>必須フィールド・型・構造</td><td>8</td><td class="ok">✅ PASS</td></tr>
+      <tr><td>Retryロジック</td><td>失敗時リトライ / fallback</td><td>6</td><td class="ok">✅ PASS</td></tr>
+      <tr><td>dry_run検証</td><td>dry_run=trueの維持確認</td><td>5</td><td class="ok">✅ PASS</td></tr>
+      <tr><td>安定出力</td><td>同一入力で10回連続一致</td><td>10</td><td class="ok">✅ PASS</td></tr>
+      <tr><td>E2Eシナリオ</td><td>シナリオA/B/C 完全フロー</td><td>8</td><td class="ok">✅ PASS</td></tr>
+    </table>
+    <div class="hbox" style="margin-top:12px;"><p>Docker上で再現可能。証跡ログは <code>test/evidence/pytest.local.YYYYMMDD-HHMMSS.log</code> に保存。</p></div>
+    <div class="slide-num">8 / 15</div>
+  </div>
+
+  <!-- Slide 9: Scenario A -->
+  <div class="slide slide-content" data-n="9">
+    <div class="eyebrow">業務シナリオ A</div>
+    <h2>チャーン傾向の顧客対応</h2>
+    <div class="twocol">
+      <div>
+        <div class="card" style="margin-bottom:12px;"><h3>入力</h3><p>「最近来店が減っている。値引きには反応しないが、限定感には反応する。」</p></div>
+        <div class="card"><h3>抽出state</h3><ul><li>来店頻度低下</li><li>価格感度低</li><li>限定感志向</li></ul></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px;"><h3>intent</h3><p>再来店動機付け</p></div>
+        <div class="card" style="margin-bottom:12px;"><h3>next_actions</h3><ul><li>限定LINE配信案</li><li>会員限定イベント</li></ul></div>
+        <div class="card"><h3>接続API</h3><p>line.broadcast（dry_run）</p></div>
+      </div>
+    </div>
+    <div class="slide-num">9 / 15</div>
+  </div>
+
+  <!-- Slide 10: Scenario B & C -->
+  <div class="slide slide-content" data-n="10">
+    <div class="eyebrow">業務シナリオ B / C</div>
+    <h2>費用対効果 & 現場負荷</h2>
+    <div class="cards cards-2">
+      <div class="card">
+        <h3>B: 費用対効果が見えない</h3>
+        <p style="color:#8b949e;font-size:0.78rem;margin-bottom:8px;">「成果が見えない」と店舗から指摘</p>
+        <ul><li>state: 成果不透明 / 説明不足</li><li>intent: 成果可視化</li><li>actions: ダッシュボード提示 / レポート自動生成</li><li>API: dashboard.generate</li></ul>
+      </div>
+      <div class="card">
+        <h3>C: 現場が忙しい</h3>
+        <p style="color:#8b949e;font-size:0.78rem;margin-bottom:8px;">「配信作業が面倒で継続できない」</p>
+        <ul><li>state: 運用負荷高</li><li>intent: 作業簡略化</li><li>actions: テンプレ生成 / 自動配信下書き</li><li>API: template.generate</li></ul>
+      </div>
+    </div>
+    <div class="hbox" style="margin-top:16px;"><p>どのシナリオも <strong>state → intent → actions → API</strong> の一貫した構造で処理される。</p></div>
+    <div class="slide-num">10 / 15</div>
+  </div>
+
+  <!-- Slide 11: Why others can't -->
+  <div class="slide slide-content" data-n="11">
+    <div class="eyebrow">競合優位性</div>
+    <h2>なぜ他社がやっていないのか</h2>
+    <div class="cards">
+      <div class="card"><h3>💸 業務API接続コスト</h3><p>各社の業務システムへの接続設計は一朝一夕で構築できない</p></div>
+      <div class="card"><h3>⚠️ 誤実行リスク</h3><p>dry_runやrollback設計なしでは本番接続に踏み切れない</p></div>
+      <div class="card"><h3>📋 説明責任</h3><p>trace_idによる監査証跡がないと社内承認を得られない</p></div>
+    </div>
+    <div class="hbox" style="margin-top:16px;"><p>本アーキテクチャはこれらすべてを<strong>設計の前提</strong>として組み込んでいる。</p></div>
+    <div class="slide-num">11 / 15</div>
+  </div>
+
+  <!-- Slide 12: Achievement -->
+  <div class="slide slide-content" data-n="12">
+    <div class="eyebrow">Phase 1 到達点</div>
+    <h2>現フェーズの完了状態</h2>
+    <div class="stats">
+      <div class="stat"><div class="num">37</div><div class="lab">pytest件数（全PASS）</div></div>
+      <div class="stat"><div class="num">10x</div><div class="lab">安定出力検証回数</div></div>
+      <div class="stat"><div class="num">3</div><div class="lab">業務シナリオ実証済み</div></div>
+      <div class="stat"><div class="num">100%</div><div class="lab">dry_run安全設計</div></div>
+    </div>
+    <div class="slide-num">12 / 15</div>
+  </div>
+
+  <!-- Slide 13: Roadmap -->
+  <div class="slide slide-content" data-n="13">
+    <div class="eyebrow">ロードマップ</div>
+    <h2>Phase 2 / 3 への展開</h2>
+    <div class="rm">
+      <div class="rm-box ph1"><h3>Phase 1 ✅ 完了</h3><ul><li>パイプライン設計</li><li>pytest 37件整備</li><li>dry_run安全設計</li><li>スキーマ安定出力</li></ul></div>
+      <div class="rm-box ph2"><h3>Phase 2 🔶 次フェーズ</h3><ul><li>LINE実接続（1パターン）</li><li>BigQuery保存</li><li>成果ログ可視化</li><li>本番切替フラグ設計</li></ul></div>
+      <div class="rm-box ph3"><h3>Phase 3 ⏳ 計画中</h3><ul><li>チャーン特化Agent</li><li>来店頻度低下自動分岐</li><li>成果トラッキング統合</li><li>AB提案自動生成</li></ul></div>
+    </div>
+    <div class="slide-num">13 / 15</div>
+  </div>
+
+  <!-- Slide 14: Next step -->
+  <div class="slide slide-content" data-n="14">
+    <div class="eyebrow">ネクストステップ</div>
+    <h2>「価値が出る最小単位」で接続証明する</h2>
+    <div class="cards cards-2" style="margin-top:8px;">
+      <div class="card">
+        <h3>Phase 2 着手の判断基準</h3>
+        <ul>
+          <li>LINEチャネル接続の承認</li>
+          <li>BigQueryプロジェクト払い出し</li>
+          <li>dry_run → 本番切替の承認フロー策定</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Phase 2 完了の定義</h3>
+        <ul>
+          <li>シナリオAのLINE実配信 1回成功</li>
+          <li>BigQueryへのログ保存確認</li>
+          <li>成果ダッシュボードの初期表示</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-num">14 / 15</div>
+  </div>
+
+  <!-- Slide 15: Conclusion -->
+  <div class="slide slide-section" data-n="15">
+    <div class="eyebrow">結論</div>
+    <h1>構造がある。<br>だから接続できる。</h1>
+    <div style="margin-top:24px;">
+      <div class="cards">
+        <div class="card"><h3>✅ 構造化できる</h3><p>自然文をstate / intent / actionsに分割</p></div>
+        <div class="card"><h3>✅ 安全設計済み</h3><p>dry_run + rollback + trace_id</p></div>
+        <div class="card"><h3>✅ 再現可能</h3><p>Docker + pytest 37件 全PASS</p></div>
+      </div>
+    </div>
+    <div class="slide-num">15 / 15</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prev()">← 前へ</button>
+  <span class="counter" id="counter">1 / 15</span>
+  <button onclick="next()">次へ →</button>
+</div>
+
+<script>
+  let cur = 1; const total = 15;
+  const slides = document.querySelectorAll('.slide');
+  function show(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[n-1].classList.add('active');
+    document.getElementById('counter').textContent = n + ' / ' + total;
+    document.getElementById('bar').style.width = (n/total*100) + '%';
+    cur = n;
+  }
+  function next() { if(cur < total) show(cur+1); }
+  function prev() { if(cur > 1) show(cur-1); }
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# ローカルデモ用 docker compose
+# 使い方:
+#   docker compose -f docker-compose.local.yml up --build
+# 停止:
+#   docker compose -f docker-compose.local.yml down
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONPATH=/app/src
+    # ローカル編集→即反映（--reload）
+    volumes:
+      - ./:/app

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>経営層向けサマリー</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; background: #f5f5f0; color: #1a1a1a; }
+
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Page card */
+  .pg { background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); margin-bottom: 32px; overflow: hidden; }
+
+  /* Page header */
+  .pg-head { padding: 36px 40px 28px; border-bottom: 1px solid #f0f0ee; }
+  .pg-label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #0066cc; font-weight: 700; margin-bottom: 8px; }
+  .pg-head h2 { font-size: 1.6rem; font-weight: 800; line-height: 1.25; color: #0d1117; }
+  .pg-head .lead { color: #555; font-size: 0.92rem; margin-top: 8px; line-height: 1.6; }
+
+  /* Page body */
+  .pg-body { padding: 28px 40px 36px; }
+
+  /* Takeaway box */
+  .takeaway { background: #f0f7ff; border-left: 5px solid #0066cc; border-radius: 0 8px 8px 0; padding: 14px 20px; margin-bottom: 24px; }
+  .takeaway strong { color: #0066cc; font-size: 0.8rem; display: block; margin-bottom: 4px; letter-spacing: 0.06em; }
+  .takeaway p { color: #1a1a1a; font-size: 0.9rem; line-height: 1.6; }
+
+  /* 3col stat */
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 20px 0; }
+  .stat { text-align: center; background: #f8f8f6; border-radius: 10px; padding: 18px 12px; }
+  .stat .n { font-size: 2rem; font-weight: 800; color: #0066cc; }
+  .stat .l { font-size: 0.74rem; color: #666; margin-top: 4px; }
+
+  /* Comparison */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .cbox { border-radius: 10px; padding: 18px 20px; }
+  .cbox.bad { background: #fff5f5; border: 1px solid #ffd0d0; }
+  .cbox.good { background: #f0fff4; border: 1px solid #b7ebc8; }
+  .cbox h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
+  .cbox.bad h3 { color: #c00; }
+  .cbox.good h3 { color: #007a3d; }
+  .cbox li { font-size: 0.82rem; color: #444; list-style: none; padding: 3px 0; }
+  .cbox.bad li::before { content: '✗ '; color: #c00; }
+  .cbox.good li::before { content: '✓ '; color: #007a3d; }
+
+  /* Scenario table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  th { background: #f8f8f6; color: #666; font-size: 0.76rem; padding: 9px 14px; text-align: left; border-bottom: 2px solid #eee; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f0f0ee; color: #333; vertical-align: top; }
+  td strong { color: #0d1117; }
+
+  /* Phase timeline */
+  .timeline { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; margin-top: 20px; }
+  .tl-item { padding: 16px 20px; position: relative; }
+  .tl-item:not(:last-child)::after { content: '→'; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); color: #ccc; font-size: 1.2rem; z-index:1; }
+  .tl-done { background: #f0fff4; border: 1px solid #b7ebc8; border-radius: 10px 0 0 10px; }
+  .tl-next { background: #fffbf0; border: 1px solid #ffe58f; }
+  .tl-plan { background: #f8f8f6; border: 1px solid #e0e0e0; border-radius: 0 10px 10px 0; }
+  .tl-item h3 { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; }
+  .tl-done h3 { color: #007a3d; }
+  .tl-next h3 { color: #b06f00; }
+  .tl-plan h3 { color: #666; }
+  .tl-item li { font-size: 0.75rem; list-style: none; color: #555; padding: 2px 0; }
+  .tl-item li::before { content: '· '; }
+
+  /* Bottom message */
+  .bottom-msg { background: #0d1117; color: #fff; border-radius: 10px; padding: 20px 24px; margin-top: 24px; text-align: center; }
+  .bottom-msg p { font-size: 0.88rem; color: #c9d1d9; line-height: 1.7; }
+  .bottom-msg strong { color: #58a6ff; }
+
+  /* Check list */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 6px 0; font-size: 0.87rem; color: #333; border-bottom: 1px solid #f0f0ee; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: '✅ '; }
+
+  footer { text-align: center; color: #aaa; font-size: 0.74rem; padding: 16px 0 32px; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Page 1: 課題と答え -->
+  <div class="pg">
+    <div class="pg-head">
+      <div class="pg-label">Page 1 — 課題と解決策</div>
+      <h2>AIを業務に使えない理由と、その答え</h2>
+      <div class="lead">AIの精度向上は続いているが、業務で使えないまま投資が止まっているケースが多い。原因は「精度」ではない。</div>
+    </div>
+    <div class="pg-body">
+      <div class="takeaway">
+        <strong>EXECUTIVE TAKEAWAY</strong>
+        <p>本取り組みは「AIが賢いことの証明」ではなく、<strong>「業務に接続できる構造の証明」</strong>である。自然文を構造化し、既存の業務フローに安全につなぐ設計を実証した。</p>
+      </div>
+
+      <div class="compare">
+        <div class="cbox bad">
+          <h3>これまでのAI活用の限界</h3>
+          <ul>
+            <li>出力が自然文のまま → 業務に渡せない</li>
+            <li>誰がいつ何を指示したか追跡不可</li>
+            <li>誤実行した際の戻し手順がない</li>
+            <li>AIと業務システムがデータ分断</li>
+          </ul>
+        </div>
+        <div class="cbox good">
+          <h3>本アーキテクチャが解決すること</h3>
+          <ul>
+            <li>自然文 → JSON構造化 → API接続</li>
+            <li>trace_idで全操作を監査証跡として保存</li>
+            <li>rollback_planを出力に常に含める</li>
+            <li>dry_runで安全に業務システムと接続</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="n">37</div><div class="l">自動テスト件数（全PASS）</div></div>
+        <div class="stat"><div class="n">3</div><div class="l">業務シナリオ実証済み</div></div>
+        <div class="stat"><div class="n">0</div><div class="l">誤実行リスク（dry_run設計）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page 2: 実証された業務価値 -->
+  <div class="pg">
+    <div class="pg-head">
+      <div class="pg-label">Page 2 — 実証された業務価値</div>
+      <h2>3つの業務課題への接続が実証された</h2>
+      <div class="lead">シナリオ入力から施策候補・API接続まで、一貫した構造で処理できることをデモで確認。</div>
+    </div>
+    <div class="pg-body">
+      <table>
+        <tr>
+          <th>業務課題</th>
+          <th>入力（現場の声）</th>
+          <th>自動生成される施策</th>
+          <th>接続先</th>
+        </tr>
+        <tr>
+          <td><strong>チャーン傾向</strong></td>
+          <td>来店が減っている。限定感には反応する</td>
+          <td>限定LINE配信 / 会員限定イベント</td>
+          <td>LINE配信API</td>
+        </tr>
+        <tr>
+          <td><strong>費用対効果不明</strong></td>
+          <td>成果が見えないと店舗から言われている</td>
+          <td>ダッシュボード提示 / 自動レポート生成</td>
+          <td>BIレポートAPI</td>
+        </tr>
+        <tr>
+          <td><strong>現場オペ負荷</strong></td>
+          <td>配信作業が面倒で継続できない</td>
+          <td>テンプレ自動生成 / 配信下書き自動化</td>
+          <td>テンプレートAPI</td>
+        </tr>
+      </table>
+
+      <div class="takeaway" style="margin-top:20px;">
+        <strong>BUSINESS VALUE</strong>
+        <p>「現場の声」を入力するだけで、施策候補 → 業務APIへの接続まで自動で構造化される。CS担当者が自然文で入力すれば、AIがAPIに渡せる形に変換する。</p>
+      </div>
+
+      <ul class="checklist" style="margin-top:16px;">
+        <li>施策に根拠（state）が紐づくため、なぜその施策を提案したかを説明できる</li>
+        <li>rollback_planが必ず存在するため、施策を止める判断も即座にできる</li>
+        <li>dry_runモードのため、現時点では実際の配信・操作は発生しない</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Page 3: 判断材料とネクストステップ -->
+  <div class="pg">
+    <div class="pg-head">
+      <div class="pg-label">Page 3 — 判断材料とネクストステップ</div>
+      <h2>Phase 2承認に必要な情報</h2>
+      <div class="lead">Phase 1では「構造・安全・再現性」を証明した。Phase 2では「価値が出る最小単位」での本番接続を目指す。</div>
+    </div>
+    <div class="pg-body">
+      <div class="timeline">
+        <div class="tl-item tl-done">
+          <h3>Phase 1 ✅ 完了</h3>
+          <ul>
+            <li>パイプライン設計・実装</li>
+            <li>pytest 37件 全PASS</li>
+            <li>dry_run安全設計</li>
+            <li>3シナリオ実証</li>
+          </ul>
+        </div>
+        <div class="tl-item tl-next">
+          <h3>Phase 2 🔶 承認待ち</h3>
+          <ul>
+            <li>LINE実接続（1パターン）</li>
+            <li>BigQuery保存</li>
+            <li>成果ログ可視化</li>
+            <li>本番切替フロー策定</li>
+          </ul>
+        </div>
+        <div class="tl-item tl-plan">
+          <h3>Phase 3 ⏳ 計画中</h3>
+          <ul>
+            <li>チャーン特化Agent</li>
+            <li>成果トラッキング</li>
+            <li>AB提案自動生成</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway" style="margin-top:24px;">
+        <strong>DECISION REQUIRED</strong>
+        <p>Phase 2着手のために必要な承認は2点：<strong>① LINEチャネルへの接続許可</strong>、<strong>② BigQueryプロジェクトの払い出し</strong>。スコープは「チャーン傾向シナリオのLINE配信1パターン」に限定。</p>
+      </div>
+
+      <div class="bottom-msg">
+        <p>これは「AIで何か作った」ではなく、<br><strong>業務構造を分解し、安全に再接続できる状態にした取り組み</strong>です。<br>次のステップは、その構造を使って<strong>実際の価値を1件証明すること</strong>です。</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Subjective Agent Architecture — 経営層向け要約資料 — Confidential</footer>
+</div>
+</body>
+</html>
