@@ -275,7 +275,10 @@ CとDを押さえることで、今日はBの裏方として機能し、明日�
 
 ## 📝 License
 
-[MIT](./LICENSE)
+Source code is licensed under the **[MIT License](./LICENSE)**.
+
+Documentation (including whitepapers and design documents under `/docs`)
+is licensed under **[CC BY-NC 4.0](./docs/LICENSE)**.
 
 ---
 

@@ -1,3 +1,5 @@
+> © 2026 Kazuaki Watanabe — Licensed under [CC BY-NC 4.0](./LICENSE)
+
 # Business Mapping Layer
 ## Subjective Agent Architecture — 事業接続モデル
 

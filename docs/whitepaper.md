@@ -1,3 +1,5 @@
+> © 2026 Kazuaki Watanabe — Licensed under [CC BY-NC 4.0](./LICENSE)
+
 # エージェント最適化社会における競争優位の再定義
 ## ― 主観モデル × SaaS接続基盤による戦略設計 ―
 
