@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 9 items
+
+test/execution/test_primitives_registry.py::test_maps_actions_to_primitives PASSED [ 11%]
+test/execution/test_primitives_registry.py::test_unknown_action_requires_manual_review PASSED [ 22%]
+test/execution/test_primitives_registry.py::test_empty_input_returns_empty PASSED [ 33%]
+test/execution/test_primitives_registry.py::test_multiple_unknown_actions_all_flagged PASSED [ 44%]
+test/execution/test_primitives_registry.py::test_all_primitives_are_resolvable[segment_customers] PASSED [ 55%]
+test/execution/test_primitives_registry.py::test_all_primitives_are_resolvable[send_line_message] PASSED [ 66%]
+test/execution/test_primitives_registry.py::test_all_primitives_are_resolvable[reserve_offer] PASSED [ 77%]
+test/execution/test_primitives_registry.py::test_all_primitives_are_resolvable[cancel_offer] PASSED [ 88%]
+test/execution/test_primitives_registry.py::test_all_primitives_are_resolvable[create_followup_task] PASSED [100%]
+
+============================== 9 passed in 0.03s ==============================
