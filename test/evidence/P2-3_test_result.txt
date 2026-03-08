@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 5 items
+
+test/contracts/test_confirmed_kpi_definition.py::test_confirmed_fields_exist[baseline] PASSED [ 20%]
+test/contracts/test_confirmed_kpi_definition.py::test_confirmed_fields_exist[comparison_method] PASSED [ 40%]
+test/contracts/test_confirmed_kpi_definition.py::test_confirmed_fields_exist[data_source] PASSED [ 60%]
+test/contracts/test_confirmed_kpi_definition.py::test_confirmed_fields_exist[measurement_window] PASSED [ 80%]
+test/contracts/test_confirmed_kpi_definition.py::test_at_least_one_confirmed_kpi PASSED [100%]
+
+============================== 5 passed in 0.03s ==============================
