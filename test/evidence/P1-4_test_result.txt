@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 5 items
+
+test/execution/test_execution_audit.py::test_audit_contains_trace_id PASSED [ 20%]
+test/execution/test_execution_audit.py::test_audit_contains_selected_primitives PASSED [ 40%]
+test/execution/test_execution_audit.py::test_audit_contains_dry_run_flag PASSED [ 60%]
+test/execution/test_execution_audit.py::test_audit_contains_timestamp PASSED [ 80%]
+test/execution/test_execution_audit.py::test_audit_created_without_trace_id PASSED [100%]
+
+============================== 5 passed in 0.02s ==============================
