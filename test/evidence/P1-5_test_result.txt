@@ -1,0 +1,14 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 4 items
+
+test/execution/test_rollback_manager.py::test_rollback_returns_status_for_known_adapter PASSED [ 25%]
+test/execution/test_rollback_manager.py::test_unknown_adapter_requires_manual_intervention PASSED [ 50%]
+test/execution/test_rollback_manager.py::test_rollback_record_for_dry_run PASSED [ 75%]
+test/execution/test_rollback_manager.py::test_empty_execution_id_handled_safely PASSED [100%]
+
+============================== 4 passed in 0.03s ==============================
