@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Business Primitives",
+  "type": "object",
+  "definitions": {
+    "primitive": {
+      "type": "object",
+      "required": [
+        "name",
+        "input",
+        "output",
+        "dry_run_behavior",
+        "rollback_hint",
+        "audit_fields"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "segment_customers",
+            "send_line_message",
+            "reserve_offer",
+            "cancel_offer",
+            "create_followup_task"
+          ]
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "output": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "dry_run_behavior": {
+          "type": "string"
+        },
+        "rollback_hint": {
+          "type": "string"
+        },
+        "audit_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "primitives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/primitive"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 14 items
+
+test/contracts/test_business_primitives_schema.py::test_schema_is_valid_draft7 PASSED [  7%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[name] PASSED [ 14%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[input] PASSED [ 21%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[output] PASSED [ 28%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[dry_run_behavior] PASSED [ 35%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[rollback_hint] PASSED [ 42%]
+test/contracts/test_business_primitives_schema.py::test_primitive_required_fields[audit_fields] PASSED [ 50%]
+test/contracts/test_business_primitives_schema.py::test_missing_rollback_hint_fails PASSED [ 57%]
+test/contracts/test_business_primitives_schema.py::test_missing_dry_run_behavior_fails PASSED [ 64%]
+test/contracts/test_business_primitives_schema.py::test_all_primitives_documented[segment_customers] PASSED [ 71%]
+test/contracts/test_business_primitives_schema.py::test_all_primitives_documented[send_line_message] PASSED [ 78%]
+test/contracts/test_business_primitives_schema.py::test_all_primitives_documented[reserve_offer] PASSED [ 85%]
+test/contracts/test_business_primitives_schema.py::test_all_primitives_documented[cancel_offer] PASSED [ 92%]
+test/contracts/test_business_primitives_schema.py::test_all_primitives_documented[create_followup_task] PASSED [100%]
+
+============================= 14 passed in 0.29s ==============================
