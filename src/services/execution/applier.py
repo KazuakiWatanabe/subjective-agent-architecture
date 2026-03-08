@@ -10,16 +10,38 @@
     - 未知 primitive または manual review 指定 step はスキップする
 Note:
     - Phase 1 の最小実装として P1-2 の Mock Adapter を使用する
-    - 監査の永続化は行わず、adapter が返す結果を集計する
+    - 監査の永続化は行わず、execution audit をメモリ上に保持する
 """
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
+from uuid import uuid4
 
 from adapters.mock_crm_adapter import MockCrmAdapter
 from adapters.mock_line_adapter import MockLineAdapter
 from adapters.mock_task_adapter import MockTaskAdapter
+
+
+class AuditStore:
+    """execution audit をメモリ上に保持する。"""
+
+    def __init__(self) -> None:
+        """監査レコード一覧を初期化する。"""
+        self._records: list[dict[str, Any]] = []
+
+    def save(self, record: dict[str, Any]) -> None:
+        """監査レコードを保存する。
+
+        Args:
+            record: 保存対象の監査レコード
+        """
+        self._records.append(record)
+
+    def last(self) -> dict[str, Any] | None:
+        """最後に保存した監査レコードを返す。"""
+        return self._records[-1] if self._records else None
 
 
 class Applier:
@@ -37,6 +59,7 @@ class Applier:
             "send_line_message": line_adapter,
             "create_followup_task": task_adapter,
         }
+        self.audit_store = AuditStore()
 
     def apply(self, plan: dict[str, Any]) -> dict[str, Any]:
         """plan を順次 validate / execute する。
@@ -48,8 +71,21 @@ class Applier:
             適用結果の辞書
         """
         steps = plan.get("steps", [])
+        trace_id = str(plan.get("trace_id") or uuid4())
+        selected_primitives = [step.get("primitive") for step in steps if step.get("primitive")]
+        plan_dry_run = all(dict(step.get("params", {})).get("dry_run", True) for step in steps) if steps else True
+
         if not steps:
-            return {"status": "no_steps", "applied_count": 0, "skipped_count": 0, "results": []}
+            result = {"status": "no_steps", "applied_count": 0, "skipped_count": 0, "results": []}
+            self.audit_store.save(
+                {
+                    "trace_id": trace_id,
+                    "selected_primitives": selected_primitives,
+                    "dry_run": plan_dry_run,
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            )
+            return result
 
         applied_count = 0
         skipped_count = 0
@@ -94,10 +130,19 @@ class Applier:
         else:
             status = "completed"
 
-        return {
+        result = {
             "status": status,
             "applied_count": applied_count,
             "skipped_count": skipped_count,
             "dry_run_count": dry_run_count,
             "results": results,
         }
+        self.audit_store.save(
+            {
+                "trace_id": trace_id,
+                "selected_primitives": selected_primitives,
+                "dry_run": plan_dry_run,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
+        return result
