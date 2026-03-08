@@ -1,0 +1,22 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 12 items
+
+test/analytics/test_state_churn_hypothesis_table.py::test_hypothesis_table_exists PASSED [  8%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u6765\u5e97\u983b\u5ea6\u4f4e\u4e0b] PASSED [ 16%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u4e88\u7b97\u903c\u8feb] PASSED [ 25%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u591a\u5fd9] PASSED [ 33%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u6bd4\u8f03\u75b2\u308c] PASSED [ 41%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u9650\u5b9a\u611f\u5fd7\u5411] PASSED [ 50%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u4fa1\u683c\u611f\u5ea6\u9ad8] PASSED [ 58%]
+test/analytics/test_state_churn_hypothesis_table.py::test_all_churn_states_covered[\u63a5\u89e6\u5e0c\u8584\u5316] PASSED [ 66%]
+test/analytics/test_state_churn_hypothesis_table.py::test_required_columns_exist[churn_risk_hypothesis] PASSED [ 75%]
+test/analytics/test_state_churn_hypothesis_table.py::test_required_columns_exist[assumed_signal] PASSED [ 83%]
+test/analytics/test_state_churn_hypothesis_table.py::test_required_columns_exist[recommended_intervention] PASSED [ 91%]
+test/analytics/test_state_churn_hypothesis_table.py::test_required_columns_exist[evidence_level] PASSED [100%]
+
+============================= 12 passed in 0.04s ==============================
