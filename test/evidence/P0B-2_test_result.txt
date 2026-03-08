@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-7.4.4, pluggy-1.0.0 -- C:\Python\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Git\subjective-agent-architecture
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 13 items
+
+test/contracts/test_churn_demo_schema.py::test_schema_is_valid_draft7 PASSED [  7%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[trait] PASSED [ 15%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[state] PASSED [ 23%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[meta] PASSED [ 30%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[intent] PASSED [ 38%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[recommended_primitives] PASSED [ 46%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[kpi_hypothesis] PASSED [ 53%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[confidence] PASSED [ 61%]
+test/contracts/test_churn_demo_schema.py::test_required_fields_exist[trace_id] PASSED [ 69%]
+test/contracts/test_churn_demo_schema.py::test_valid_payload_passes PASSED [ 76%]
+test/contracts/test_churn_demo_schema.py::test_missing_trace_id_fails PASSED [ 84%]
+test/contracts/test_churn_demo_schema.py::test_confidence_over_1_fails PASSED [ 92%]
+test/contracts/test_churn_demo_schema.py::test_empty_primitives_fails PASSED [100%]
+
+============================= 13 passed in 0.29s ==============================
