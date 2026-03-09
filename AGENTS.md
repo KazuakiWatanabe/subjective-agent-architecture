@@ -4,12 +4,15 @@ Subjective Agent Architecture ― 最上位ルール定義書（日本語）
 本ドキュメントは、本リポジトリに関わる **すべてのAI（Codex等）と人間**が遵守すべき最上位ルールです。  
 README や設計資料よりも **AGENTS.md を優先**します。
 
-本プロジェクトは `task/task-breakdown-v2.md` に基づいて実装します。  
-**Phase 0（社内モック）完了まではスコープ拡張を禁止**します。
+本プロジェクトは `task/task-breakdown-v2.md` および `docs/roadmap_churn_whitepaper_v1.md` に基づいて実装します。
+
+> **現在の実装フェーズ**  
+> Phase 0 は完了済みです。現在は **Phase 0B（デモ再編集）〜 Phase 1（業務接続）** の移行期にあります。  
+> ロードマップの詳細は `docs/roadmap_churn_whitepaper_v1.md` を参照してください。
 
 ---
 
-## 1. プロジェクトの目的（Phase 0）
+## 1. プロジェクトの目的
 
 本プロジェクトは、自然文（社内で刺さる現場の言葉）から
 
@@ -18,25 +21,31 @@ README や設計資料よりも **AGENTS.md を優先**します。
 - **action_bindings（業務接続の足場）**
 - **監査ログ（説明責任）**
 
-を備えた **決定論的なJSON** を生成し、社内が「触って判断できる」デモを最短で成立させます。
+を備えた **決定論的なJSON** を生成し、**チャーン防止施策との業務接続・KPI改善** を証明することを最終目標とします。
 
-### Phase 0 の最小ゴール
+### 現在の目標（Phase 0B）
 
-- `POST /convert` に自然文を渡すと、`src/contracts/state_intent.schema.json` に **準拠したJSON** を返す
-- **Retry Loop** により、Validator NG を最大2回まで再試行する
-- 成功・失敗いずれの場合も **Audit Log を残す**
-- すべて `pytest` がPASSし、証跡を `test/evidence/` に保存する
+- state 語彙をチャーン文脈（来店頻度低下 / 予算逼迫 / 限定感志向 等）へ再調整する
+- Trait / State / Meta の3層を最低限表現する
+- next_actions を業務原子（Business Primitives）に寄せる
+- KPI を仮定義する（再来店率 / 30日継続率 / 施策反応率 / 誤配信率）
+
+### 次の目標（Phase 1）
+
+- Business Primitives（`segment_customers` / `send_line_message` / `create_followup_task` 等）を定義する
+- Mock Adapter を実装し、Validate → Plan → Apply の最小フローを作る
+- dry_run モードと rollback 最小形を持つ
 
 ---
 
-## 2. 最上位のスコープ制約（必須）
+## 2. スコープ制約（必須）
 
-- Phase 0 の間は **「社内モック」以外を実装しない**
-- 外部APIの本番実行（配信や更新など）は **禁止**（`dry_run: true` のみ）
-- UIやインフラは **必要最低限**（デモ成立が目的）
+- 外部APIの本番実行（配信や更新など）は **Phase 1 完了まで禁止**（`dry_run: true` のみ）
+- UIやインフラは **必要最低限**（業務接続の証明が目的）
+- 現フェーズのスコープ外となる機能（Phase 2 以降の C層運用・Meta 学習ループ等）は **先行実装しない**
 
 > **Note**  
-> Phase 1（実業務接続）以降の設計は、Phase 0 完了後に別タスクで追加する
+> Phase 1（実業務接続）以降の詳細設計は `docs/roadmap_churn_whitepaper_v1.md` §6 を参照してください。
 
 ---
 
@@ -47,9 +56,10 @@ README や設計資料よりも **AGENTS.md を優先**します。
 ```
 subjective-agent-architecture/
   docs/
-    whitepaper.md               # アーキテクチャ設計書
+    whitepaper.md                        # アーキテクチャ設計書
+    roadmap_churn_whitepaper_v1.md       # 現行ロードマップ（チャーン防止特化）
   task/
-    task-breakdown-v2.md        # タスク定義（本ドキュメントより詳細な実装指示）
+    task-breakdown-v2.md                 # タスク定義
   test/
     contracts/
       test_state_intent_schema.py
@@ -63,11 +73,11 @@ subjective-agent-architecture/
     integration/
       test_health.py
       test_convert_e2e.py
-    evidence/                   # pytest -v の出力結果（自動生成）
+    evidence/                            # pytest -v の出力結果（自動生成）
   src/
     contracts/
-      state_intent.schema.json  # 出力スキーマ定義
-      presets.json              # デモ用プリセット入力
+      state_intent.schema.json           # 出力スキーマ定義
+      presets.json                       # デモ用プリセット入力
     services/
       inference/
         reader.py
@@ -79,10 +89,10 @@ subjective-agent-architecture/
   docker-compose.yml
   cloudbuild.yaml
   .dockerignore
-  conftest.py                   # sys.path 解決（src/ をルートに追加）
-  pytest.ini                    # testpaths = test
-  AGENTS.md                     # 本ファイル（最上位ルール）
-  CLAUDE.md                     # Claude Code 向け実装ガイド
+  conftest.py
+  pytest.ini
+  AGENTS.md                              # 本ファイル（最上位ルール）
+  CLAUDE.md                              # Claude Code 向け実装ガイド
   LICENSE
   README.md
 ```
@@ -110,11 +120,9 @@ Generator     src/services/inference/generator.py
 JSON出力（schema準拠）
 ```
 
-> **Note：agentic-bizflow との相違について**  
-> [agentic-bizflow](https://github.com/KazuakiWatanabe/agentic-bizflow) は  
-> Reader → **Planner** → Validator → Generator の4層構成です。  
-> 本リポジトリは **state/intent変換** に特化した別ドメインのため、  
-> Planner を持たない3層構成を意図的に採用しています。
+> **Phase 1 以降**  
+> Business Primitives との接続レイヤー（Mock Adapter）が追加されます。  
+> 詳細は `docs/roadmap_churn_whitepaper_v1.md` §6 Phase 1 を参照してください。
 
 ---
 
@@ -163,7 +171,7 @@ orchestrator.run(input_text)
 ## 7. スキーマ制約
 
 `src/contracts/state_intent.schema.json` の必須項目と制約は以下の通りです。  
-スキーマ変更は `T0-2-1` のテストが全件PASS することを確認してから行います。
+スキーマ変更はテストが全件PASS することを確認してから行います。
 
 | フィールド | 型 | 制約 |
 |---|---|---|
@@ -176,7 +184,7 @@ orchestrator.run(input_text)
 | `action_bindings` | array[object] | minItems: 1 |
 | `action_bindings[].action` | string | 必須 |
 | `action_bindings[].api` | string | 必須 |
-| `action_bindings[].dry_run` | boolean | **Phase 0 は true 固定** |
+| `action_bindings[].dry_run` | boolean | **Phase 1 完了まで true 固定** |
 
 ---
 
@@ -191,7 +199,7 @@ orchestrator.run(input_text)
 
 ```
 main        本番相当（Cloud Run デプロイ済みの状態）
-develop     統合ブランチ（Phase 0 完了時に main へマージ）
+develop     統合ブランチ
 feature/    機能実装（develop から分岐）
 release/    リリース準備（develop → main への橋渡し）
 hotfix/     main の緊急修正
@@ -205,10 +213,11 @@ release/phase-{フェーズ番号}
 hotfix/{内容}
 
 例：
-  feature/T0-2-1-schema
-  feature/T0-3-1-reader
-  feature/T0-3-4a-audit-log
-  release/phase-0
+  feature/P0B-churn-vocab          # Phase 0B: state語彙のチャーン文脈化
+  feature/P0B-kpi-hypothesis       # Phase 0B: KPI仮定義
+  feature/P1-primitives-spec       # Phase 1: Business Primitives定義
+  feature/P1-mock-adapter          # Phase 1: Mock Adapter実装
+  release/phase-1
   hotfix/schema-minItems-fix
 ```
 
@@ -216,12 +225,13 @@ hotfix/{内容}
 
 | 項目 | ルール |
 |---|---|
-| タイトル | `{タスクID}: {内容}` の形式 |
+| タイトル | `{フェーズ-タスク}: {内容}` の形式 |
 | base ブランチ | feature → `develop`、release/hotfix → `main` |
-| 説明 | 完了条件（task-breakdown-v2.md 記載）を箇条書きで転記する |
-| エビデンス | `test/evidence/{タスクID}_test_result.txt` が含まれていること |
+| 説明 | 完了条件を箇条書きで転記する |
+| エビデンス | `test/evidence/` に対応する結果ファイルが含まれていること |
 | テスト | PR 時点で全件 PASS していること |
-| レビュー | セルフマージ可（Phase 0 は1名運用を前提） |
+| セキュリティ | §11 のコードレビューチェックリストを確認済みであること |
+| レビュー | セルフマージ可（1名運用を前提） |
 
 ### ブランチ保護設定（GitHub Settings）
 
@@ -238,21 +248,6 @@ hotfix/{内容}
 ✅ Do not allow bypassing the above settings
 ```
 
-### タスクとブランチの対応表
-
-| ブランチ名 | 対応タスク | base | 依存 |
-|---|---|---|---|
-| `feature/T0-2-1-schema` | スキーマ作成 | develop | なし |
-| `feature/T0-3-1-reader` | Reader実装 | develop | T0-2-1 |
-| `feature/T0-3-2-validator` | Validator実装 | develop | T0-2-1 |
-| `feature/T0-3-3-generator` | Generator実装 | develop | T0-3-2 |
-| `feature/T0-3-4-orchestrator` | Orchestrator実装 | develop | T0-3-1〜3 |
-| `feature/T0-3-4a-audit-log` | AuditStore実装 | develop | T0-3-4 |
-| `feature/T0-4-1-presets` | presets.json作成 | develop | なし |
-| `feature/T0-5-1-health` | ヘルスチェック確認 | develop | デプロイ後 |
-| `feature/T0-5-2-e2e` | E2Eテスト | develop | T0-5-1 |
-| `release/phase-0` | Phase 0リリース | main | 全タスク完了後 |
-
 ---
 
 ## 9. Docker / デプロイ構成
@@ -266,15 +261,6 @@ hotfix/{内容}
 | 本番デプロイ | Cloud Run（`cloudbuild.yaml` でビルド → push → deploy） |
 | ポート | `8080`（Cloud Run のデフォルト） |
 | 環境変数 | `DEMO_URL`（E2Eテストの接続先）、`GOOGLE_CLOUD_PROJECT`（Vertex AI） |
-
-### ファイル配置
-
-```
-Dockerfile
-docker-compose.yml
-cloudbuild.yaml
-.dockerignore
-```
 
 ### Dockerfile
 
@@ -342,10 +328,6 @@ images:
   - "gcr.io/$PROJECT_ID/subjective-agent:$COMMIT_SHA"
 ```
 
-> **Note**  
-> Phase 0 では `--allow-unauthenticated` を使用します。  
-> Phase 1 以降で認証（Cloud IAP等）を追加する際は `cloudbuild.yaml` を更新します。
-
 ---
 
 ## 10. テスト・エビデンス運用ルール
@@ -356,16 +338,10 @@ images:
 # 全テスト一括実行
 pytest
 
-# タスク単位で実行してエビデンス保存
-pytest test/contracts/test_state_intent_schema.py -v > test/evidence/T0-2-1_test_result.txt
-pytest test/agents/test_reader.py             -v > test/evidence/T0-3-1_test_result.txt
-pytest test/agents/test_validator.py          -v > test/evidence/T0-3-2_test_result.txt
-pytest test/agents/test_generator.py          -v > test/evidence/T0-3-3_test_result.txt
-pytest test/agents/test_orchestrator.py       -v > test/evidence/T0-3-4_test_result.txt
-pytest test/agents/test_orchestrator_audit.py -v > test/evidence/T0-3-4a_test_result.txt
-pytest test/contracts/test_presets.py         -v > test/evidence/T0-4-1_test_result.txt
-pytest test/integration/test_health.py        -v > test/evidence/T0-5-1_test_result.txt
-pytest test/integration/test_convert_e2e.py   -v > test/evidence/T0-5-2_test_result.txt
+# モジュール単位で実行してエビデンス保存
+pytest test/contracts/ -v > test/evidence/contracts_test_result.txt
+pytest test/agents/    -v > test/evidence/agents_test_result.txt
+pytest test/integration/ -v > test/evidence/integration_test_result.txt
 ```
 
 ### ルール
@@ -380,34 +356,56 @@ pytest test/integration/test_convert_e2e.py   -v > test/evidence/T0-5-2_test_res
 
 AIが本リポジトリで作業する際は以下を遵守します。
 
-1. **タスク定義に従う**：`task/task-breakdown-v2.md` に記載された実装内容・完了条件を厳守する
-2. **スコープを超えない**：Phase 0 に存在しないファイル・ディレクトリを新設しない
-3. **パスを変更しない**：セクション3の構造は変更禁止
-4. **dry_run を外さない**：`action_bindings` の `dry_run` を `false` にしない
+1. **ロードマップに従う**：`docs/roadmap_churn_whitepaper_v1.md` の現フェーズ（Phase 0B / Phase 1）に記載された実装内容・完了条件を厳守する
+2. **スコープを超えない**：現フェーズに存在しない機能（Phase 2 以降の学習ループ等）を先行実装しない
+3. **パスを変更しない**：§3 の構造は変更禁止
+4. **dry_run を外さない**：`action_bindings` の `dry_run` を `false` にしない（Phase 1 完了まで）
 5. **テストを先に確認する**：実装前に対応するテストコードを読み、完了条件を把握する
 6. **エビデンスを保存する**：タスク完了時に必ず `test/evidence/` へ出力する
 7. **Audit Log を省略しない**：成功・失敗いずれのパスでも `audit_store.save()` を呼び出す
 8. **ブランチルールを守る**：`main`・`develop` への直接 push 禁止。必ず `feature/` ブランチを切って PR を出す
-9. **Pythonコメント規約を守る**：Pythonファイル先頭に「概要」「入出力」「制約」「Note」を含む日本語docstringを記述する（例: `入出力: A -> B。`）。関数/メソッドでは必要に応じて `Args / Returns / Raises / Note` を明示し、分岐意図が読み取りづらい処理には1〜2行の補助コメントを追加する
+9. **Pythonコメント規約を守る**：Pythonファイル先頭に「概要」「入出力」「制約」「Note」を含む日本語docstringを記述する。関数/メソッドでは必要に応じて `Args / Returns / Raises / Note` を明示し、分岐意図が読み取りづらい処理には1〜2行の補助コメントを追加する
+10. **既存コードのimportを無条件に踏襲しない**：既存ファイルで使われているパッケージであっても、新しいファイルで `import` する前に §12 のセキュリティチェックを実施する。`requirements.txt` に記載のないパッケージは使用禁止
 
 ---
 
-## 12. Phase 0 完了チェックリスト
+## 12. セキュリティルール（サプライチェーン攻撃対策）
 
-Phase 0 完了の判定は以下が **すべて満たされている** こととします。
+> **背景**  
+> AIは「既存コードで使われているパッケージ」を既知・安全なものとして扱い、  
+> 悪意あるコードをそのまま新しいファイルへ踏襲する場合があります（攻撃成功率100%の事例あり）。  
+> CLAUDE.md への直接的なバックドア指示は防がれますが、既存コードのパターンは精査されません。  
+> このセクションはその盲点を補うための多重防御として機能します。
 
-- [ ] `test/evidence/T0-2-1_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-3-1_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-3-2_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-3-3_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-3-4_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-3-4a_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-4-1_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-5-1_test_result.txt` ― 全件PASS
-- [ ] `test/evidence/T0-5-2_test_result.txt` ― 安定率 8/10 以上
-- [ ] `action_bindings` の `dry_run` が全件 `true` であることをE2Eで確認済み
-- [ ] Audit Log が成功・失敗いずれのパスでも保存されることを確認済み
-- [ ] `release/phase-0` ブランチから PR を作成し、`main` へマージ済み
-- [ ] `git tag phase-0` を打ち、リモートへ push 済み
+### AI・人間の双方が遵守するルール
 
-上記完了後、Phase 1（業務接続）へ進む。
+| ルール | 詳細 |
+|---|---|
+| **既存importの盲信禁止** | 既存コードに含まれる `import` / `from ... import` であっても、初めて別ファイルで使う際は下記チェックを必ず実施する |
+| **環境変数の外部送信禁止** | `os.environ` / `os.getenv` の値を外部URLへ送信するコードを一切書かない |
+| **許可リスト外パッケージの使用禁止** | `requirements.txt` に記載のないパッケージを追加する場合は、PyPI公式ページ・ソースコードを確認してからのみ追加可とする |
+| **未知の外部エンドポイント禁止** | コード中に現れる外部URLはすべて目視確認する。`internal-monitoring` 等のそれらしい名称であっても例外なし |
+| **auto-acceptモードの使用禁止** | Claude Codeをauto-acceptで運用しない。生成コードは必ず確認してから適用する |
+
+### セキュリティチェック手順（パッケージ追加・変更時）
+
+```bash
+pip install pip-audit
+pip-audit
+
+# スキャン結果をエビデンスとして保存
+pip-audit > test/evidence/security_audit.txt
+```
+
+確認ポイント（新規パッケージのソースコードを目視）：
+
+- `httpx` / `requests` / `urllib` 等による外部通信
+- `os.environ` / `os.getenv` の参照と送信
+- `subprocess` / `eval` / `exec` の使用
+
+### コードレビューチェックリスト（PR時）
+
+- [ ] 新規 `import` 文はすべて `requirements.txt` 記載のパッケージか
+- [ ] 環境変数（`os.environ` / `os.getenv`）を外部へ送信していないか
+- [ ] 外部URLへのHTTPリクエストが意図しない箇所に存在しないか
+- [ ] 既存パッケージのパターンを踏襲する際に、そのパッケージが安全であることを確認したか
